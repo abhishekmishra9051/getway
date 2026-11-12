@@ -1,0 +1,33 @@
+<IfModule mod_rewrite.c>
+    Options -Indexes
+
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Handle X-XSRF-Token Header
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # Block access to hidden files and sensitive directories
+    RewriteRule (^|/)\.(?!well-known) - [F]
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|vendor|tests|scripts)(/|$) - [F,L,NC]
+    RewriteRule ^(?!index\.php$|install\.php$).*\.(php[0-9]?|phtml|phar)(/|$) - [F,L,NC]
+    RewriteRule \.(sqlite[0-9]*|sql|log|bak|zip|tar|gz)(/|$) - [F,L,NC]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
